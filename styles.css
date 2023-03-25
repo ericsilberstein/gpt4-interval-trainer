@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 8px 4px; /* Adjust the margin for better spacing */
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  
+  button.interval {
+    background-color: #4CAF50;
+  }
+  
+  button.replay {
+    background-color: #008CBA; /* Change the background color for the "Replay" button */
+  }
+  
+  .interval-buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  #feedback {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .correct {
+    color: green;
+  }
+  
+  .incorrect {
+    color: red;
+  }
+  
