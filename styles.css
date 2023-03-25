@@ -36,6 +36,12 @@ body {
     justify-content: center;
   }
   
+  .interval-buttons-row button:disabled {
+    background-color: #cccccc;
+    border-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
   button:hover {
     background-color: #45a049;
   }
@@ -43,8 +49,9 @@ body {
   #feedback {
     font-size: 18px;
     font-weight: bold;
+    min-height: 24px;
   }
-  
+    
   .correct {
     color: green;
   }
@@ -52,4 +59,25 @@ body {
   .incorrect {
     color: red;
   }
+
+  #next-interval-button {
+    background-color: #007bff; /* Change the background color to blue */
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Adjust the padding for better sizing */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  
+  /* Change the background color of the "Next Interval" button on hover */
+  #next-interval-button:hover {
+    background-color: #0056b3;
+  }
+  
+  
   

@@ -3,8 +3,10 @@ const scoreElement = document.getElementById('score');
 const feedback = document.getElementById('feedback');
 const startButton = document.getElementById('start');
 const intervalButtons = document.getElementById('interval-buttons');
+const nextIntervalButton = document.getElementById('next-interval-button');
 const replayButton = document.getElementById('replay');
 const noteDuration = 1; // Duration of each note in seconds
+let currentBaseFrequency = 440; // Initialize with A4 frequency
 
 const intervals = [
   { name: 'Unison', semitones: 0 },
@@ -25,25 +27,6 @@ const intervals = [
 let score = 0;
 let incorrectAttempts = 0;
 let correctInterval;
-
-// function playFrequency(freq) {
-//   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-//   const oscillator = audioContext.createOscillator();
-//   oscillator.type = 'sine';
-//   oscillator.frequency.value = freq;
-//   oscillator.connect(audioContext.destination);
-//   oscillator.start();
-//   setTimeout(() => {
-//     oscillator.stop();
-//   }, 1000);
-// }
-
-// function playNotes(baseFreq, interval) {
-//   playFrequency(baseFreq);
-//   setTimeout(() => {
-//     playFrequency(baseFreq * Math.pow(2, interval.semitones / 12));
-//   }, 1000);
-// }
 
 function playNotes(baseFrequency, interval) {
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -109,7 +92,14 @@ function updateScoreDisplay() {
       incorrectAttempts++;
     }
     updateScoreDisplay();
-    setTimeout(start, 2000);
+
+    // Disable all interval choice buttons
+    const intervalButtonsRow = document.querySelector('.interval-buttons-row');
+    for (let button of intervalButtonsRow.children) {
+      button.disabled = true;
+    }
+
+    drawStaff(currentBaseFrequency, correctInterval);
   }
 
   function start() {
@@ -117,16 +107,87 @@ function updateScoreDisplay() {
     startButton.style.display = 'none'; // Hide the start button after it's clicked
     feedback.textContent = ''; // Clear the correct or incorrect message
     correctInterval = generateRandomInterval();
-    playNotes(440, correctInterval);
+
+    // Generate a random base pitch from C3 to B4
+    const minPitch = 48; // C3 MIDI note number
+    const maxPitch = 71; // B4 MIDI note number
+    const basePitch = Math.floor(Math.random() * (maxPitch - minPitch + 1)) + minPitch;
+
+    // Calculate the frequency of the base pitch
+    const baseFrequency = 440 * Math.pow(2, (basePitch - 69) / 12);
+
+    currentBaseFrequency = baseFrequency; // Store the base frequency
+
+    // Re-enable all interval choice buttons
+    const intervalButtonsRow = document.querySelector('.interval-buttons-row');
+    for (let button of intervalButtonsRow.children) {
+      button.disabled = false;
+    }
+
+    // Hide staff container
+    const staffContainer = document.getElementById('staff-container');
+    staffContainer.hidden = true;
+
+    playNotes(baseFrequency, correctInterval);
   }
 
 function replay() {
     if (correctInterval) {
-      playNotes(440, correctInterval);
+      playNotes(currentBaseFrequency, correctInterval);
     }
   }
 
+  function getNoteForFrequency(frequency) {
+    const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'As', 'B'];
+
+    const referenceFrequency = 440; // A4
+    const referenceNote = 9; // A
+    const referenceOctave = 4;
+  
+    const semitonesFromReference = Math.round(12 * Math.log2(frequency / referenceFrequency));
+    const noteNumber = (referenceNote + semitonesFromReference + 12) % 12; // Add 12 to ensure a positive value
+    const octave = referenceOctave + Math.floor((referenceNote + semitonesFromReference) / 12);
+  
+    return `${noteStrings[noteNumber]}/${octave}`;
+  }
+  
+  function drawStaff(baseFrequency, interval) {
+    const staffContainer = document.getElementById('staff-container');
+    staffContainer.innerHTML = ''; // Clear previous staff
+    staffContainer.hidden = false;
+  
+    const renderer = new Vex.Flow.Renderer(staffContainer, Vex.Flow.Renderer.Backends.SVG);
+    renderer.resize(500, 150);
+    const context = renderer.getContext();
+    const stave = new Vex.Flow.Stave(10, 30, 400);
+  
+    stave.addClef('treble').setContext(context).draw();
+  
+    const note1 = getNoteForFrequency(baseFrequency);
+    const note2 = getNoteForFrequency(baseFrequency * Math.pow(2, interval.semitones / 12));
+
+    const staveNote1 = new Vex.Flow.StaveNote({ keys: [note1], duration: 'q' });
+    const staveNote2 = new Vex.Flow.StaveNote({ keys: [note2], duration: 'q' });
+  
+    if (note1.includes('#')) {
+      staveNote1.addAccidental(0, new Vex.Flow.Accidental('#'));
+    }
+  
+    if (note2.includes('#')) {
+      staveNote2.addAccidental(0, new Vex.Flow.Accidental('#'));
+    }
+  
+    const notes = [staveNote1, staveNote2];
+  
+    const voice = new Vex.Flow.Voice({ num_beats: 2, beat_value: 4 });
+    voice.addTickables(notes);
+  
+    const formatter = new Vex.Flow.Formatter().joinVoices([voice]).format([voice], 300);
+    voice.draw(context, stave);
+  }  
+
 startButton.addEventListener('click', start);
 replayButton.addEventListener('click', replay);
+nextIntervalButton.addEventListener('click', start);
 setupIntervalButtons();
 
