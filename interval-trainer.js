@@ -9,20 +9,21 @@ const noteDuration = 1; // Duration of each note in seconds
 let currentBaseFrequency = 440; // Initialize with A4 frequency
 
 const intervals = [
-  { name: 'Unison', semitones: 0 },
-  { name: 'Minor 2nd', semitones: 1 },
-  { name: 'Major 2nd', semitones: 2 },
-  { name: 'Minor 3rd', semitones: 3 },
-  { name: 'Major 3rd', semitones: 4 },
-  { name: 'Perfect 4th', semitones: 5 },
-  { name: 'Tritone', semitones: 6 },
-  { name: 'Perfect 5th', semitones: 7 },
-  { name: 'Minor 6th', semitones: 8 },
-  { name: 'Major 6th', semitones: 9 },
-  { name: 'Minor 7th', semitones: 10 },
-  { name: 'Major 7th', semitones: 11 },
-  { name: 'Octave', semitones: 12 },
+  { name: 'Unison', semitones: 0, ascendingExample: 'Twinkle, Twinkle, Little Star', descendingExample: 'Twinkle, Twinkle, Little Star' },
+  { name: 'Minor 2nd', semitones: 1, ascendingExample: 'Jaws Theme', descendingExample: 'Für Elise' },
+  { name: 'Major 2nd', semitones: 2, ascendingExample: 'Happy Birthday', descendingExample: 'Mary Had a Little Lamb' },
+  { name: 'Minor 3rd', semitones: 3, ascendingExample: 'Greensleeves', descendingExample: 'Hey Jude' },
+  { name: 'Major 3rd', semitones: 4, ascendingExample: 'When the Saints Go Marching In', descendingExample: 'Swing Low, Sweet Chariot' },
+  { name: 'Perfect 4th', semitones: 5, ascendingExample: 'Here Comes the Bride', descendingExample: 'I\'ve Been Working on the Railroad' },
+  { name: 'Tritone', semitones: 6, ascendingExample: 'The Simpsons', descendingExample: 'YYZ by Rush' },
+  { name: 'Perfect 5th', semitones: 7, ascendingExample: '\'Make-way\' from Aladin Prince Ali', descendingExample: 'Flint-stones' },
+  { name: 'Minor 6th', semitones: 8, ascendingExample: 'The Entertainer', descendingExample: 'Love Story Theme' },
+  { name: 'Major 6th', semitones: 9, ascendingExample: 'My Bonnie Lies Over the Ocean', descendingExample: 'Nobody Knows the Trouble I\'ve Seen' },
+  { name: 'Minor 7th', semitones: 10, ascendingExample: '\'Somewhere\' from West Side Story', descendingExample: 'Christ-mas-es from \'White Christmas\'' },
+  { name: 'Major 7th', semitones: 11, ascendingExample: '\'Take On Me\' by A-ha', descendingExample: '\'I Love You\' by Cole Porter' },
+  { name: 'Octave', semitones: 12, ascendingExample: 'Somewhere Over the Rainbow', descendingExample: 'Willow Weep for Me' },
 ];
+
 
 let score = 0;
 let incorrectAttempts = 0;
@@ -86,7 +87,9 @@ function updateScoreDisplay() {
       feedback.classList.add('correct');
       score++;
     } else {
-      feedback.textContent = `Incorrect! The correct answer is ${correctInterval.name}.`;
+      const direction = correctInterval.semitones > 0 ? 'ascending' : 'descending';
+      const exampleSong = correctInterval.semitones > 0 ? correctInterval.ascendingExample : correctInterval.descendingExample;
+      feedback.textContent = `Incorrect! The correct answer is ${correctInterval.name} (${direction}) as in ${exampleSong}.`;
       feedback.classList.remove('correct');
       feedback.classList.add('incorrect');
       incorrectAttempts++;
