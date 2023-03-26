@@ -79,5 +79,33 @@ body {
     background-color: #0056b3;
   }
   
+  .stats {
+    margin-top: 20px;
+  }
   
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+  }
   
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  th {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  #staff-container {
+    height: 200px; /* Adjust this value according to the height of your staff */
+    position: relative;
+    overflow: hidden;
+  }  

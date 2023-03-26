@@ -23,6 +23,7 @@ const intervals = [
   { name: 'Major 7th', semitones: 11, ascendingExample: '\'Take On Me\' by A-ha', descendingExample: '\'I Love You\' by Cole Porter' },
   { name: 'Octave', semitones: 12, ascendingExample: 'Somewhere Over the Rainbow', descendingExample: 'Willow Weep for Me' },
 ];
+const stats = intervals.map(() => ({ correct: 0, incorrect: 0 }));
 
 let score = 0;
 let incorrectAttempts = 0;
@@ -83,8 +84,6 @@ function getNoteForFrequency(frequency) {
 
 function drawStaff(baseFrequency, interval) {
   const staffContainer = document.getElementById('staff-container');
-  staffContainer.innerHTML = ''; // Clear previous staff
-  staffContainer.hidden = false;
 
   const renderer = new Vex.Flow.Renderer(staffContainer, Vex.Flow.Renderer.Backends.SVG);
   renderer.resize(500, 200);
@@ -133,12 +132,58 @@ function updateScoreDisplay() {
   scoreElement.textContent = `Correct: ${score} | Incorrect: ${incorrectAttempts} | ${percentCorrect}% correct`;
 }
 
+function updateStatsDisplay() {
+  const statsElement = document.getElementById('stats');
+  statsElement.innerHTML = '';
+
+  const table = document.createElement('table');
+  const thead = document.createElement('thead');
+  const tbody = document.createElement('tbody');
+  const headerRow = document.createElement('tr');
+  ['Interval', 'Correct', 'Incorrect', 'Percentage'].forEach((text) => {
+    const th = document.createElement('th');
+    th.textContent = text;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  intervals.forEach((interval, index) => {
+    const row = document.createElement('tr');
+    const intervalName = document.createElement('td');
+    intervalName.textContent = interval.name;
+    row.appendChild(intervalName);
+
+    const correct = document.createElement('td');
+    correct.textContent = stats[index].correct;
+    row.appendChild(correct);
+
+    const incorrect = document.createElement('td');
+    incorrect.textContent = stats[index].incorrect;
+    row.appendChild(incorrect);
+
+    const percent = document.createElement('td');
+    const totalAttempts = stats[index].correct + stats[index].incorrect;
+    const percentCorrect = totalAttempts > 0 ? Math.round((stats[index].correct / totalAttempts) * 100) : 0;
+    percent.textContent = `${percentCorrect}%`;
+    row.appendChild(percent);
+
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+  statsElement.appendChild(table);
+}
+
 function checkAnswer(selectedIndex) {
-  if (intervals[selectedIndex].name === correctInterval.name) {
+  const selectedInterval = intervals[selectedIndex];
+  const correctIndex = intervals.findIndex((interval) => interval.name === correctInterval.name);
+  if (selectedInterval.name === correctInterval.name) {
     feedback.textContent = 'Great job! That\'s correct!';
     feedback.classList.remove('incorrect');
     feedback.classList.add('correct');
     score++;
+    stats[correctIndex].correct++; // Update correct stats for the correct interval
   } else {
     const direction = correctInterval.semitones > 0 ? 'ascending' : 'descending';
     const exampleSong = correctInterval.semitones > 0 ? correctInterval.ascendingExample : correctInterval.descendingExample;
@@ -146,8 +191,10 @@ function checkAnswer(selectedIndex) {
     feedback.classList.remove('correct');
     feedback.classList.add('incorrect');
     incorrectAttempts++;
+    stats[correctIndex].incorrect++; // Update incorrect stats for the correct interval
   }
   updateScoreDisplay();
+  updateStatsDisplay(); // Update the interval stats table
 
   // Disable all interval choice buttons
   const intervalButtonsRow = document.querySelector('.interval-buttons-row');
@@ -180,9 +227,9 @@ function start() {
     button.disabled = false;
   }
 
-  // Hide staff container
+  // Clear staff container
   const staffContainer = document.getElementById('staff-container');
-  staffContainer.hidden = true;
+  staffContainer.innerHTML = ''; // Clear previous staff
 
   playNotes(baseFrequency, correctInterval);
 }
