@@ -138,7 +138,7 @@ function replay() {
   }
 
   function getNoteForFrequency(frequency) {
-    const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'As', 'B'];
+    const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
     const referenceFrequency = 440; // A4
     const referenceNote = 9; // A
