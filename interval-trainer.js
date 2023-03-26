@@ -108,9 +108,9 @@ function updateScoreDisplay() {
     feedback.textContent = ''; // Clear the correct or incorrect message
     correctInterval = generateRandomInterval();
 
-    // Generate a random base pitch from C3 to B4
-    const minPitch = 48; // C3 MIDI note number
-    const maxPitch = 71; // B4 MIDI note number
+    // Generate a random base pitch from A4 to C5
+    const minPitch = 69; // A4 MIDI note number
+    const maxPitch = 72; // C5 MIDI note number
     const basePitch = Math.floor(Math.random() * (maxPitch - minPitch + 1)) + minPitch;
 
     // Calculate the frequency of the base pitch
@@ -145,7 +145,10 @@ function replay() {
     const referenceOctave = 4;
   
     const semitonesFromReference = Math.round(12 * Math.log2(frequency / referenceFrequency));
-    const noteNumber = (referenceNote + semitonesFromReference + 12) % 12; // Add 12 to ensure a positive value
+    let noteNumber = (referenceNote + semitonesFromReference) % 12;
+    if (noteNumber < 0) {
+      noteNumber = 12 + noteNumber;
+    }
     const octave = referenceOctave + Math.floor((referenceNote + semitonesFromReference) / 12);
   
     return `${noteStrings[noteNumber]}/${octave}`;
@@ -157,7 +160,7 @@ function replay() {
     staffContainer.hidden = false;
   
     const renderer = new Vex.Flow.Renderer(staffContainer, Vex.Flow.Renderer.Backends.SVG);
-    renderer.resize(500, 150);
+    renderer.resize(500, 200);
     const context = renderer.getContext();
     const stave = new Vex.Flow.Stave(10, 30, 400);
   
